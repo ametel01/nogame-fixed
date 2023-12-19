@@ -1,5 +1,5 @@
 mod f128 {
     mod core;
-    mod fixed;
+    mod types;
     mod lut;
 }

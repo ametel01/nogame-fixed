@@ -1,4 +1,4 @@
-use nogame_fixed::f128::core::{abs, add, div, exp, mul, neg, sub};
+use nogame_fixed::f128::core::{abs, add, div, exp, ln, mul, neg, sub};
 
 const ONE_u128: u128 = 18446744073709551616_u128;
 
@@ -21,6 +21,7 @@ trait FixedTrait {
 
     // Math
     fn exp(self: Fixed) -> Fixed;
+    fn ln(self: Fixed) -> Fixed;
 }
 
 impl FixedImpl of FixedTrait {
@@ -46,6 +47,10 @@ impl FixedImpl of FixedTrait {
 
     fn exp(self: Fixed) -> Fixed {
         return exp(self);
+    }
+
+    fn ln(self: Fixed) -> Fixed {
+        return ln(self);
     }
 }
 

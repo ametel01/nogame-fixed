@@ -1,4 +1,4 @@
-use nogame_fixed::f128::fixed::{Fixed, FixedTrait, ONE_u128};
+use nogame_fixed::f128::types::{Fixed, FixedTrait, ONE_u128};
 use nogame_fixed::f128::lut;
 
 fn abs(a: Fixed) -> Fixed {
@@ -91,6 +91,37 @@ fn neg(a: Fixed) -> Fixed {
     } else {
         return FixedTrait::new(a.mag, false);
     }
+}
+
+fn ln(a: Fixed) -> Fixed {
+    return FixedTrait::new(12786308645202655660, false) * log2(a); // ln(2) = 0.693...
+}
+
+// Calculates the binary logarithm of x: log2(x)
+// self must be greather than zero
+fn log2(a: Fixed) -> Fixed {
+    assert(a.sign == false, 'must be positive');
+
+    if (a.mag == ONE_u128) {
+        return FixedTrait::ZERO();
+    } else if (a.mag < ONE_u128) {
+        // Compute true inverse binary log if 0 < x < 1
+        let div = FixedTrait::ONE() / a;
+        return -log2(div);
+    }
+
+    let (msb, div) = lut::msb(a.mag / ONE_u128);
+    let norm = a / FixedTrait::new_unscaled(div, false);
+
+    let r8 = FixedTrait::new(167660832607149504, true) * norm;
+    let r7 = (r8 + FixedTrait::new(2284550827067371376, false)) * norm;
+    let r6 = (r7 + FixedTrait::new(13804762162529339368, true)) * norm;
+    let r5 = (r6 + FixedTrait::new(48676798788932142400, false)) * norm;
+    let r4 = (r5 + FixedTrait::new(110928274989790216568, true)) * norm;
+    let r3 = (r4 + FixedTrait::new(171296190111888966192, false)) * norm;
+    let r2 = (r3 + FixedTrait::new(184599081115266689944, true)) * norm;
+    let r1 = (r2 + FixedTrait::new(150429590981271126408, false)) * norm;
+    return r1 + FixedTrait::new(63187350828072553424, true) + FixedTrait::new_unscaled(msb, false);
 }
 
 fn _split_unsigned(a: Fixed) -> (u128, u128) {
