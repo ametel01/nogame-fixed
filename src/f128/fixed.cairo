@@ -1,4 +1,4 @@
-use nogame_fixed::f128::core::{add, div, exp, mul, neg, sub};
+use nogame_fixed::f128::core::{abs, add, div, exp, mul, neg, sub};
 
 const ONE_u128: u128 = 18446744073709551616_u128;
 
@@ -13,6 +13,7 @@ struct Fixed {
 trait FixedTrait {
     fn ZERO() -> Fixed;
     fn ONE() -> Fixed;
+    fn abs(self: Fixed) -> Fixed;
 
     // Constructors
     fn new(mag: u128, sign: bool) -> Fixed;
@@ -37,6 +38,10 @@ impl FixedImpl of FixedTrait {
 
     fn new_unscaled(mag: u128, sign: bool) -> Fixed {
         return FixedTrait::new(mag * ONE_u128, sign);
+    }
+
+    fn abs(self: Fixed) -> Fixed {
+        return abs(self);
     }
 
     fn exp(self: Fixed) -> Fixed {
