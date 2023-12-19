@@ -1,5 +1,5 @@
-use fixed::f128::fixed::{Fixed, FixedTrait, ONE_u128};
-use fixed::f128::lut;
+use nogame_fixed::f128::fixed::{Fixed, FixedTrait, ONE_u128};
+use nogame_fixed::f128::lut;
 
 fn add(a: Fixed, b: Fixed) -> Fixed {
     if a.sign == b.sign {

@@ -1,4 +1,4 @@
-use fixed::f128::core::{add, div, exp, mul};
+use nogame_fixed::f128::core::{add, div, exp, mul};
 
 const ONE_u128: u128 = 18446744073709551616_u128;
 
