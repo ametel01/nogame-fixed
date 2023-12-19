@@ -3,7 +3,7 @@ use nogame_fixed::f128::core::{abs, add, div, exp, ln, mul, neg, sub};
 const ONE_u128: u128 = 18446744073709551616_u128;
 const ONE: felt252 = 18446744073709551616; 
 
-#[derive(Copy, Drop)]
+#[derive(Copy, Drop, Serde)]
 struct Fixed {
     mag: u128,
     sign: bool
