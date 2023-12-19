@@ -1,4 +1,4 @@
-use nogame_fixed::f128::core::{add, div, exp, mul};
+use nogame_fixed::f128::core::{add, div, exp, mul, neg, sub};
 
 const ONE_u128: u128 = 18446744073709551616_u128;
 
@@ -59,5 +59,18 @@ impl FixedDiv of Div<Fixed> {
 impl FixedMul of Mul<Fixed> {
     fn mul(lhs: Fixed, rhs: Fixed) -> Fixed {
         return mul(lhs, rhs);
+    }
+}
+
+impl FixedSub of Sub<Fixed> {
+    fn sub(lhs: Fixed, rhs: Fixed) -> Fixed {
+        return sub(lhs, rhs);
+    }
+}
+
+impl FixedNeg of Neg<Fixed> {
+    #[inline(always)]
+    fn neg(a: Fixed) -> Fixed {
+        return neg(a);
     }
 }

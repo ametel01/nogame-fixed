@@ -75,6 +75,20 @@ fn mul(a: Fixed, b: Fixed) -> Fixed {
     return FixedTrait::new(scaled_u256.low, a.sign ^ b.sign);
 }
 
+fn sub(a: Fixed, b: Fixed) -> Fixed {
+    return add(a, -b);
+}
+
+fn neg(a: Fixed) -> Fixed {
+    if a.mag == 0 {
+        return a;
+    } else if !a.sign {
+        return FixedTrait::new(a.mag, !a.sign);
+    } else {
+        return FixedTrait::new(a.mag, false);
+    }
+}
+
 fn _split_unsigned(a: Fixed) -> (u128, u128) {
     return core::integer::u128_safe_divmod(a.mag, core::integer::u128_as_non_zero(ONE_u128));
 }
