@@ -124,6 +124,14 @@ fn log2(a: Fixed) -> Fixed {
     return r1 + FixedTrait::new(63187350828072553424, true) + FixedTrait::new_unscaled(msb, false);
 }
 
+fn sqrt(a: Fixed) -> Fixed {
+    assert(a.sign == false, 'must be positive');
+    let root = core::integer::u128_sqrt(a.mag);
+    let scale_root = core::integer::u128_sqrt(ONE_u128);
+    let res_u128 = core::integer::upcast(root) * ONE_u128 / core::integer::upcast(scale_root);
+    return FixedTrait::new(res_u128, false);
+}
+
 fn _split_unsigned(a: Fixed) -> (u128, u128) {
     return core::integer::u128_safe_divmod(a.mag, core::integer::u128_as_non_zero(ONE_u128));
 }
