@@ -33,6 +33,51 @@ fn div(a: Fixed, b: Fixed) -> Fixed {
     return FixedTrait::new(res_u256.low, a.sign ^ b.sign);
 }
 
+fn pow(a: Fixed, b: Fixed) -> Fixed {
+    let (_, rem_u128) = _split_unsigned(b);
+
+    // use the more performant integer pow when y is an int
+    if (rem_u128 == 0) {
+        return pow_int(a, b.mag / ONE_u128, b.sign);
+    }
+
+    // x^y = exp(y*ln(x)) for x > 0 will error for x < 0
+    return exp(b * ln(a));
+}
+
+fn pow_int(a: Fixed, b: u128, sign: bool) -> Fixed {
+    let mut x = a;
+    let mut n = b;
+
+    if sign == true {
+        x = FixedTrait::ONE() / x;
+    }
+
+    if n == 0 {
+        return FixedTrait::ONE();
+    }
+
+    let mut y = FixedTrait::ONE();
+    let two = core::integer::u128_as_non_zero(2);
+
+    loop {
+        if n <= 1 {
+            break;
+        }
+
+        let (div, rem) = core::integer::u128_safe_divmod(n, two);
+
+        if rem == 1 {
+            y = x * y;
+        }
+
+        x = x * x;
+        n = div;
+    };
+
+    return x * y;
+}
+
 fn exp(a: Fixed) -> Fixed {
     return exp2(FixedTrait::new(26613026195688644984, false) * a);
 }
@@ -71,7 +116,9 @@ fn mul(a: Fixed, b: Fixed) -> Fixed {
     let (high, low) = core::integer::u128_wide_mul(a.mag, b.mag);
     let res_u256 = u256 { low: low, high: high };
     let ONE_u256 = u256 { low: ONE_u128, high: 0 };
-    let (scaled_u256, _) = core::integer::u256_safe_div_rem(res_u256, core::integer::u256_as_non_zero(ONE_u256));
+    let (scaled_u256, _) = core::integer::u256_safe_div_rem(
+        res_u256, core::integer::u256_as_non_zero(ONE_u256)
+    );
 
     assert(scaled_u256.high == 0, 'result overflow');
 
