@@ -2,10 +2,12 @@
 name = "nogame_fixed"
 version = "0.1.0"
 edition = "2023_10"
-cairo-version = "2.11.4"
+cairo-version = "2.9.4"
 
 
 # See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
 
 [dev-dependencies]
 snforge_std = "0.41.0"
+
+[lib]

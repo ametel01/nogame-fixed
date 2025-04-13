@@ -50,7 +50,7 @@ fn pow_int(a: Fixed, b: u128, sign: bool) -> Fixed {
     let mut x = a;
     let mut n = b;
 
-    if sign == true {
+    if sign {
         x = FixedTrait::ONE() / x;
     }
 
@@ -61,11 +61,7 @@ fn pow_int(a: Fixed, b: u128, sign: bool) -> Fixed {
     let mut y = FixedTrait::ONE();
     let two = core::integer::u128_as_non_zero(2);
 
-    loop {
-        if n <= 1 {
-            break;
-        }
-
+    while n != 1 {
         let (div, rem) = core::integer::u128_safe_divmod(n, two);
 
         if rem == 1 {
@@ -106,7 +102,7 @@ fn exp2(a: Fixed) -> Fixed {
         res_u = res_u * (r1 + FixedTrait::ONE());
     }
 
-    if (a.sign == true) {
+    if a.sign {
         return FixedTrait::ONE() / res_u;
     } else {
         return res_u;
@@ -118,7 +114,7 @@ fn mul(a: Fixed, b: Fixed) -> Fixed {
     let res_u256 = u256 { low: res.low, high: res.high };
     let ONE_u256 = u256 { low: ONE_u128, high: 0 };
     let (scaled_u256, _) = core::integer::u256_safe_div_rem(
-        res_u256, core::integer::u256_as_non_zero(ONE_u256)
+        res_u256, core::integer::u256_as_non_zero(ONE_u256),
     );
 
     assert(scaled_u256.high == 0, 'result overflow');
@@ -148,7 +144,7 @@ fn ln(a: Fixed) -> Fixed {
 // Calculates the binary logarithm of x: log2(x)
 // self must be greather than zero
 fn log2(a: Fixed) -> Fixed {
-    assert(a.sign == false, 'must be positive');
+    assert(!a.sign, 'must be positive');
 
     if (a.mag == ONE_u128) {
         return FixedTrait::ZERO();
@@ -173,7 +169,7 @@ fn log2(a: Fixed) -> Fixed {
 }
 
 fn sqrt(a: Fixed) -> Fixed {
-    assert(a.sign == false, 'must be positive');
+    assert(!a.sign, 'must be positive');
     let root = Sqrt::sqrt(a.mag);
     let scale_root = Sqrt::sqrt(ONE_u128);
     let res_u128 = core::integer::upcast(root) * ONE_u128 / core::integer::upcast(scale_root);
@@ -187,7 +183,9 @@ fn _split_unsigned(a: Fixed) -> (u128, u128) {
 #[cfg(test)]
 mod tests {
     use nogame_fixed::f128::types::{Fixed, FixedTrait, ONE_u128};
-    use super::{abs, add, div, exp, exp2, ln, log2, mul, neg, pow, pow_int, sqrt, sub, _split_unsigned};
+    use super::{
+        abs, add, div, exp, exp2, ln, log2, mul, neg, pow, pow_int, sqrt, sub, _split_unsigned,
+    };
 
     #[test]
     fn test_abs_function() {
@@ -251,14 +249,14 @@ mod tests {
         let x = FixedTrait::new(3 * ONE_u128, false);
         let exp = FixedTrait::ONE();
         let result = pow(x, exp);
-        
+
         let diff = if result.mag > x.mag {
             result.mag - x.mag
         } else {
             x.mag - result.mag
         };
         assert(diff < ONE_u128 / 1000000, 'x^1 should be x');
-        
+
         // Test x^0 = 1
         let result = pow(x, FixedTrait::ZERO());
         let diff = if result.mag > ONE_u128 {
@@ -272,7 +270,7 @@ mod tests {
         let exp = FixedTrait::new(2 * ONE_u128, false);
         let result = pow(x, exp);
         let expected = mul(x, x);
-        
+
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
         } else {
@@ -287,7 +285,7 @@ mod tests {
         let x = FixedTrait::new(3 * ONE_u128, false);
         let result = pow_int(x, 2, false);
         let expected = mul(x, x);
-        
+
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
         } else {
@@ -303,7 +301,7 @@ mod tests {
         // Test negative exponent: x^-n = 1/x^n
         let result = pow_int(x, 2, true);
         let expected = div(FixedTrait::ONE(), mul(x, x));
-        
+
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
         } else {
@@ -332,7 +330,7 @@ mod tests {
         let neg_one = FixedTrait::new(ONE_u128, true);
         let result_neg = exp(neg_one);
         let expected = div(FixedTrait::ONE(), exp(one));
-        
+
         // Allow small precision error
         let diff = if result_neg.mag > expected.mag {
             result_neg.mag - expected.mag
@@ -354,7 +352,7 @@ mod tests {
         let one = FixedTrait::ONE();
         let result = exp2(one);
         let expected = FixedTrait::new(2 * ONE_u128, false);
-        
+
         // Allow small precision error
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
@@ -362,12 +360,12 @@ mod tests {
             expected.mag - result.mag
         };
         assert(diff < ONE_u128 / 1000000, '2^1 should be 2');
-        
+
         // Test 2^-1 = 0.5
         let neg_one = FixedTrait::new(ONE_u128, true);
         let result = exp2(neg_one);
         let expected = FixedTrait::new(ONE_u128 / 2, false);
-        
+
         // Allow small precision error
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
@@ -383,11 +381,11 @@ mod tests {
         let one = FixedTrait::ONE();
         let result = ln(one);
         assert(result.mag < ONE_u128 / 1000000, 'ln(1) should be close to 0');
-        
+
         // Test ln(e) = 1
         let e = exp(FixedTrait::ONE());
         let result = ln(e);
-        
+
         // Allow small precision error
         let diff = if result.mag > ONE_u128 {
             result.mag - ONE_u128
@@ -403,11 +401,11 @@ mod tests {
         let one = FixedTrait::ONE();
         let result = log2(one);
         assert(result.mag < ONE_u128 / 1000000, 'log2(1) should be close to 0');
-        
+
         // Test log2(2) = 1
         let two = FixedTrait::new(2 * ONE_u128, false);
         let result = log2(two);
-        
+
         // Allow small precision error
         let diff = if result.mag > ONE_u128 {
             result.mag - ONE_u128
@@ -415,12 +413,12 @@ mod tests {
             ONE_u128 - result.mag
         };
         assert(diff < ONE_u128 / 1000000, 'log2(2) should be close to 1');
-        
+
         // Test log2(4) = 2
         let four = FixedTrait::new(4 * ONE_u128, false);
         let result = log2(four);
         let expected = FixedTrait::new(2 * ONE_u128, false);
-        
+
         // Allow small precision error
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
@@ -505,7 +503,7 @@ mod tests {
         let four = FixedTrait::new(4 * ONE_u128, false);
         let result = sqrt(four);
         let expected = FixedTrait::new(2 * ONE_u128, false);
-        
+
         // Allow small precision error
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag
@@ -518,7 +516,7 @@ mod tests {
         let nine = FixedTrait::new(9 * ONE_u128, false);
         let result = sqrt(nine);
         let expected = FixedTrait::new(3 * ONE_u128, false);
-        
+
         // Allow small precision error
         let diff = if result.mag > expected.mag {
             result.mag - expected.mag

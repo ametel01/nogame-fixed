@@ -1,12 +1,12 @@
 use nogame_fixed::f128::core::{abs, add, div, exp, ln, mul, neg, sub};
 
 const ONE_u128: u128 = 18446744073709551616_u128;
-const ONE: felt252 = 18446744073709551616; 
+const ONE: felt252 = 18446744073709551616;
 
 #[derive(Copy, Drop, Serde)]
 struct Fixed {
     mag: u128,
-    sign: bool
+    sign: bool,
 }
 
 // TRAITS
@@ -123,10 +123,10 @@ mod tests {
     fn test_abs() {
         let negative = FixedTrait::new(123456789, true);
         let positive = FixedTrait::new(123456789, false);
-        
+
         let abs_negative = negative.abs();
         let abs_positive = positive.abs();
-        
+
         assert(abs_negative.mag == 123456789, 'abs mag should be preserved');
         assert(abs_negative.sign == false, 'abs sign should be false');
         assert(abs_positive.mag == 123456789, 'abs mag should be preserved');
@@ -272,7 +272,7 @@ mod tests {
         let result = one.ln();
         // Allow small precision error
         assert(result.mag < ONE_u128 / 1000000, 'ln(1) should be close to 0');
-        
+
         // Test ln(e) = 1
         let e = FixedTrait::ONE().exp();
         let result = e.ln();
@@ -314,7 +314,7 @@ mod tests {
         let four = FixedTrait::new(4 * ONE_u128, false);
         let result = sqrt(four);
         let two = FixedTrait::new(2 * ONE_u128, false);
-        
+
         let diff = if result.mag > two.mag {
             result.mag - two.mag
         } else {
@@ -325,7 +325,7 @@ mod tests {
         // Test sqrt(1) = 1
         let one = FixedTrait::ONE();
         let result = sqrt(one);
-        
+
         let diff = if result.mag > one.mag {
             result.mag - one.mag
         } else {

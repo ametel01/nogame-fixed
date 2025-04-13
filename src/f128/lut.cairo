@@ -409,7 +409,7 @@ fn msb(whole: u128) -> (u128, u128) {
 #[cfg(test)]
 mod tests {
     use super::{exp2, msb};
-    
+
     #[test]
     fn test_exp2_lookup() {
         // Test some specific values from the lookup table
@@ -423,65 +423,65 @@ mod tests {
         assert(exp2(32) == 4294967296, 'exp2(32) should be 4294967296');
         assert(exp2(63) == 9223372036854775808, 'exp2(63) wrong');
         assert(exp2(64) == 18446744073709551616, 'exp2(64) wrong');
-        
+
         // Test values that exceed the table (should return the largest value)
         assert(exp2(65) == 18446744073709551616, 'exp2(65) should default to max');
         assert(exp2(100) == 18446744073709551616, 'exp2(100) should default to max');
     }
-    
+
     #[test]
     fn test_msb_function() {
         // Test powers of 2
         let (msb_val, div_val) = msb(1);
         assert(msb_val == 0, 'msb(1) should be 0');
         assert(div_val == 1, 'div(1) should be 1');
-        
+
         let (msb_val, div_val) = msb(2);
         assert(msb_val == 1, 'msb(2) should be 1');
         assert(div_val == 2, 'div(2) should be 2');
-        
+
         let (msb_val, div_val) = msb(4);
         assert(msb_val == 2, 'msb(4) should be 2');
         assert(div_val == 4, 'div(4) should be 4');
-        
+
         let (msb_val, div_val) = msb(8);
         assert(msb_val == 3, 'msb(8) should be 3');
         assert(div_val == 8, 'div(8) should be 8');
-        
+
         let (msb_val, div_val) = msb(16);
         assert(msb_val == 4, 'msb(16) should be 4');
         assert(div_val == 16, 'div(16) should be 16');
-        
+
         // Test non-powers of 2
         let (msb_val, div_val) = msb(3);
         assert(msb_val == 1, 'msb(3) should be 1');
         assert(div_val == 2, 'div(3) should be 2');
-        
+
         let (msb_val, div_val) = msb(5);
         assert(msb_val == 2, 'msb(5) should be 2');
         assert(div_val == 4, 'div(5) should be 4');
-        
+
         let (msb_val, div_val) = msb(7);
         assert(msb_val == 2, 'msb(7) should be 2');
         assert(div_val == 4, 'div(7) should be 4');
-        
+
         let (msb_val, div_val) = msb(9);
         assert(msb_val == 3, 'msb(9) should be 3');
         assert(div_val == 8, 'div(9) should be 8');
-        
+
         let (msb_val, div_val) = msb(10);
         assert(msb_val == 3, 'msb(10) should be 3');
         assert(div_val == 8, 'div(10) should be 8');
-        
+
         // Test larger numbers
         let (msb_val, div_val) = msb(1000);
         assert(msb_val == 9, 'msb(1000) should be 9');
         assert(div_val == 512, 'div(1000) should be 512');
-        
+
         let (msb_val, div_val) = msb(1048576); // 2^20
         assert(msb_val == 20, 'msb(2^20) should be 20');
         assert(div_val == 1048576, 'div(2^20) should be 2^20');
-        
+
         let (msb_val, div_val) = msb(1048577); // 2^20 + 1
         assert(msb_val == 20, 'msb(2^20+1) should be 20');
         assert(div_val == 1048576, 'div(2^20+1) should be 2^20');
